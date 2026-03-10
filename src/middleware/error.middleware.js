@@ -1,7 +1,7 @@
 const AppError = require("../utils/app-error.js");
-import { logger } from "../utils/logger.js";
+const logger = require("../utils/logger.js");
 
-export const errorHandler = (err, req, res, _next) => {
+const errorHandler = (err, req, res, _next) => {
   logger.error({
     message: err.message,
     stack: err.stack,
@@ -49,3 +49,5 @@ export const errorHandler = (err, req, res, _next) => {
     message: "Internal server error.",
   });
 };
+
+module.exports = errorHandler;
