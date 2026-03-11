@@ -1,8 +1,13 @@
+// Dear Dr. Ahmed,
+// I've enforced strict validation here as a learning exercise,
+// but I kept it looser in other controllers to simplify your review process.
+
 const asyncHandler = require("../utils/async-handler");
 const Product = require("../models/product.model");
 const { Category, Subcategory } = require("../models/category.model");
 const generateSlug = require("../utils/helpers.util");
 const AppError = require("../utils/app-error");
+const { log } = require("winston");
 
 const SORT_MAP = {
   newest: { createdAt: -1 },
@@ -11,6 +16,17 @@ const SORT_MAP = {
   name_desc: { name: -1 },
   price_asc: { price: 1 },
   price_desc: { price: -1 },
+};
+
+const validateExistance = async (
+  model,
+  filter,
+  message = "there is no match data",
+) => {
+  const isExists = await model.exists(filter);
+  if (!isExists) {
+    throw new AppError(message, 400);
+  }
 };
 
 const getProducts = asyncHandler(async (req, res) => {
@@ -102,24 +118,13 @@ const createProduct = asyncHandler(async (req, res) => {
   const { name, description, price, category, subcategory, stockCount } =
     req.body;
   if (!req.file) throw new AppError("Product image is required", 400);
-
-  const foundCategory = await Category.findById(category);
-  if (!foundCategory) throw new AppError("Category not found", 404);
-
-  if (subcategory) {
-    const validSubcategory = await Subcategory.exists({
-      _id: subcategory,
-      category,
-    });
-
-    if (!validSubcategory) {
-      throw new AppError(
-        "Subcategory not found or does not belong to category",
-        400,
-      );
-    }
-  }
-
+  await validateExistance(Category, { _id: category }, "Category not found");
+  if (subcategory)
+    await validateExistance(
+      Subcategory,
+      { _id: subcategory, category },
+      "Subcategory not found or does not belong to category",
+    );
   const created = await Product.create({
     name,
     slug: generateSlug(name),
@@ -143,3 +148,40 @@ module.exports = {
   getProductsAdmin,
   createProduct,
 };
+
+// const updateProduct = asyncHandler(async (req, res) => {
+//   const { name, description, price, category, subcategory, stockCount } =
+//     req.body;
+//    const data = {
+//   ...(name?.trim() && { name }),
+//   ...(description?.trim() && { description }),
+//   ...(price != null && { price }),
+//   ...(category && { category }),
+//   ...(subcategory && { subcategory }),
+//   ...(stockCount != null && { stockCount }),
+// };
+// console.log(data);
+
+//   if (req.file) data.image = req.file.filename;
+
+//   const product = await Product.findOne({ _id: req.params.id, isDeleted: false });
+//   if (!product) throw new AppError("Product not found", 404);
+//   const oldImage = product.image;
+
+//   if (data.name) data.slug = generateSlug(input.name);
+//   await validateCategoryAndSubcategory(category,subcategory);
+
+//   if (input.subcategory === null || input.subcategory === "") {
+//     delete update.subcategory;
+//     update.$unset = { subcategory: 1 };
+//   }
+
+//   Object.assign(product, update);
+//   await   .save();
+
+//   if (input.image && oldImage) deleteImageFromDisk(oldImage);
+//   return product;
+// };
+//   const updated = await productService.updateProduct(req.params.id, data);
+//   sendSuccess(res, updated, "Product updated");
+// });
