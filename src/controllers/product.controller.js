@@ -1,5 +1,6 @@
 const asyncHandler = require("../utils/async-handler");
 const Product = require("../models/product.model");
+const AppError = require("../utils/app-error");
 
 const SORT_MAP = {
   newest: { createdAt: -1 },
@@ -51,4 +52,14 @@ const getProducts = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getProducts };
+const getProductBySlug = asyncHandler(async (req, res) => {
+  const slug = req.params.slug;
+  console.log(slug);
+  const product = await Product.findOne({ slug, isDeleted: false })
+    .populate("category", "name slug")
+    .populate("subcategory", "name slug");
+  if (!product) throw new AppError("Product not found", 404);
+  res.status(200).json({ data: product, message: "Product fetched" });
+});
+
+module.exports = { getProducts, getProductBySlug };
