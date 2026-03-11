@@ -22,8 +22,10 @@ const fileFilter = (_req, file, cb) => {
 
 const MEGABYTE = 1024 * 1024;
 
-export const uploadProductImage = multer({
+const uploadProductImage = multer({
   storage,
   fileFilter,
   limits: { fileSize: 2 * MEGABYTE },
 }).single("image");
+
+module.exports = uploadProductImage;

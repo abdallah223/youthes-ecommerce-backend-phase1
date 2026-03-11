@@ -1,5 +1,7 @@
 const asyncHandler = require("../utils/async-handler");
 const Product = require("../models/product.model");
+const { Category, Subcategory } = require("../models/category.model");
+const generateSlug = require("../utils/helpers.util");
 const AppError = require("../utils/app-error");
 
 const SORT_MAP = {
@@ -96,4 +98,48 @@ const getProductsAdmin = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getProducts, getProductBySlug, getProductsAdmin };
+const createProduct = asyncHandler(async (req, res) => {
+  const { name, description, price, category, subcategory, stockCount } =
+    req.body;
+  if (!req.file) throw new AppError("Product image is required", 400);
+
+  const foundCategory = await Category.findById(category);
+  if (!foundCategory) throw new AppError("Category not found", 404);
+
+  if (subcategory) {
+    const validSubcategory = await Subcategory.exists({
+      _id: subcategory,
+      category,
+    });
+
+    if (!validSubcategory) {
+      throw new AppError(
+        "Subcategory not found or does not belong to category",
+        400,
+      );
+    }
+  }
+
+  const created = await Product.create({
+    name,
+    slug: generateSlug(name),
+    description,
+    price,
+    category,
+    subcategory: subcategory || undefined,
+    stockCount: stockCount ?? 0,
+    image: req.file.filename,
+  });
+
+  res.status(201).json({
+    message: "Product created",
+    data: created,
+  });
+});
+
+module.exports = {
+  getProducts,
+  getProductBySlug,
+  getProductsAdmin,
+  createProduct,
+};
