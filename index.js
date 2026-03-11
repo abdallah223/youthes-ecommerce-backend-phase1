@@ -6,6 +6,7 @@ const rateLimit = require("express-rate-limit");
 const path = require("path");
 const errorHandler = require("./src/middleware/error.middleware");
 const productRoutes = require("./src/routes/product.route");
+const Category = require("./src/models/category.model");
 
 const app = express();
 
