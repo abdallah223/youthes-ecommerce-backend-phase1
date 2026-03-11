@@ -62,4 +62,38 @@ const getProductBySlug = asyncHandler(async (req, res) => {
   res.status(200).json({ data: product, message: "Product fetched" });
 });
 
-module.exports = { getProducts, getProductBySlug };
+const getProductsAdmin = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10, category, search } = req.query;
+
+  const pageNum = Number(page);
+  const limitNum = Number(limit);
+  const skip = (pageNum - 1) * limitNum;
+
+  const filter = {};
+  if (category) filter.category = category;
+  if (search?.trim()) filter.$text = { $search: search.trim() };
+
+  const [products, total] = await Promise.all([
+    Product.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .populate("category", "name")
+      .populate("subcategory", "name")
+      .lean(),
+    Product.countDocuments(filter),
+  ]);
+
+  res.status(200).json({
+    success: true,
+    products,
+    meta: {
+      page: pageNum,
+      limit: limitNum,
+      total,
+      pages: Math.ceil(total / limitNum),
+    },
+  });
+});
+
+module.exports = { getProducts, getProductBySlug, getProductsAdmin };
