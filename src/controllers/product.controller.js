@@ -200,6 +200,17 @@ const updateProduct = asyncHandler(async (req, res) => {
   });
 });
 
+const softDeleteProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findOne({
+    _id: req.params.id,
+    isDeleted: false,
+  });
+  if (!product) throw new AppError("Product not found", 404);
+  product.isDeleted = true;
+  await product.save();
+  res.status(200).json({ message: "Product deleted" });
+});
+
 const deleteImageFromDisk = (filename) => {
   if (!filename) return;
   const filepath = path.join(process.cwd(), "uploads", "products", filename);
@@ -215,4 +226,5 @@ module.exports = {
   getProductsAdmin,
   createProduct,
   updateProduct,
+  softDeleteProduct,
 };

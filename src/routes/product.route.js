@@ -4,6 +4,7 @@ const {
   getProductsAdmin,
   createProduct,
   updateProduct,
+  softDeleteProduct,
 } = require("../controllers/product.controller");
 const uploadProductImage = require("../middleware/upload.middleware");
 const express = require("express");
@@ -15,5 +16,6 @@ router.get("/:slug", getProductBySlug);
 
 router.post("/", uploadProductImage, createProduct);
 router.put("/:id", uploadProductImage, updateProduct);
+router.delete("/:id", softDeleteProduct);
 
 module.exports = router;
