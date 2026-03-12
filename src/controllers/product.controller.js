@@ -1,16 +1,15 @@
 // Dear Dr. Ahmed,
-// I've enforced strict validation here as a learning exercise,
-// but I kept it looser in other controllers  and did not seperate controller logic
-//and i did into service to simplify your review process besides .
-
+// I used stricter validation in this controller as a learning exercise.
+// In the other controllers, I kept things simpler and did not move the logic
+// into a service layer, so the project would be easier to review.
 const asyncHandler = require("../utils/async-handler");
 const Product = require("../models/product.model");
 const { Category, Subcategory } = require("../models/category.model");
 const generateSlug = require("../utils/helpers.util");
 const AppError = require("../utils/app-error");
+const logger = require("../utils/logger");
 const fs = require("fs");
 const path = require("path");
-const { log } = require("winston");
 
 const SORT_MAP = {
   newest: { createdAt: -1 },
@@ -21,15 +20,37 @@ const SORT_MAP = {
   price_desc: { price: -1 },
 };
 
-const validateExistance = async (
+const validateExistence = async (
   model,
   filter,
-  message = "there is no match data",
+  message = "No matching data found",
 ) => {
-  const isExists = await model.exists(filter);
-  if (!isExists) {
-    throw new AppError(message, 400);
-  }
+  const exists = await model.exists(filter);
+  if (!exists) throw new AppError(message, 404);
+};
+
+const deleteImageFromDisk = (filename) => {
+  if (!filename) return;
+
+  const filepath = path.join(process.cwd(), "uploads", "products", filename);
+
+  fs.unlink(filepath, (err) => {
+    if (!err) {
+      logger.info("Image deleted from disk", { filename, filepath });
+      return;
+    }
+
+    if (err.code === "ENOENT") {
+      logger.warn("Image file not found during delete", { filename, filepath });
+      return;
+    }
+
+    logger.error("Failed to delete image from disk", {
+      filename,
+      filepath,
+      error: err.message,
+    });
+  });
 };
 
 const getProducts = asyncHandler(async (req, res) => {
@@ -42,9 +63,11 @@ const getProducts = asyncHandler(async (req, res) => {
     sort,
   } = req.query;
 
-  const skip = (page - 1) * limit;
-  const filter = { isDeleted: false };
+  const pageNum = Number(page);
+  const limitNum = Number(limit);
+  const skip = (pageNum - 1) * limitNum;
 
+  const filter = { isDeleted: false };
   if (category) filter.category = category;
   if (subcategory) filter.subcategory = subcategory;
   if (search?.trim()) filter.$text = { $search: search.trim() };
@@ -55,32 +78,41 @@ const getProducts = asyncHandler(async (req, res) => {
     Product.find(filter)
       .sort(sortOrder)
       .skip(skip)
-      .limit(Number(limit))
+      .limit(limitNum)
       .populate("category", "name slug")
       .populate("subcategory", "name slug")
       .lean(),
     Product.countDocuments(filter),
   ]);
+
   res.status(200).json({
     success: true,
     products,
     meta: {
-      page: Number(page),
-      limit: Number(limit),
+      page: pageNum,
+      limit: limitNum,
       total,
-      pages: Math.ceil(total / limit),
+      pages: Math.ceil(total / limitNum),
     },
   });
 });
 
 const getProductBySlug = asyncHandler(async (req, res) => {
-  const slug = req.params.slug;
-  console.log(slug);
-  const product = await Product.findOne({ slug, isDeleted: false })
+  const product = await Product.findOne({
+    slug: req.params.slug,
+    isDeleted: false,
+  })
     .populate("category", "name slug")
-    .populate("subcategory", "name slug");
+    .populate("subcategory", "name slug")
+    .lean();
+
   if (!product) throw new AppError("Product not found", 404);
-  res.status(200).json({ data: product, message: "Product fetched" });
+
+  res.status(200).json({
+    success: true,
+    message: "Product fetched",
+    data: product,
+  });
 });
 
 const getProductsAdmin = asyncHandler(async (req, res) => {
@@ -120,14 +152,19 @@ const getProductsAdmin = asyncHandler(async (req, res) => {
 const createProduct = asyncHandler(async (req, res) => {
   const { name, description, price, category, subcategory, stockCount } =
     req.body;
+
   if (!req.file) throw new AppError("Product image is required", 400);
-  await validateExistance(Category, { _id: category }, "Category not found");
-  if (subcategory)
-    await validateExistance(
+
+  await validateExistence(Category, { _id: category }, "Category not found");
+
+  if (subcategory) {
+    await validateExistence(
       Subcategory,
       { _id: subcategory, category },
       "Subcategory not found or does not belong to category",
     );
+  }
+
   const created = await Product.create({
     name,
     slug: generateSlug(name),
@@ -139,7 +176,14 @@ const createProduct = asyncHandler(async (req, res) => {
     image: req.file.filename,
   });
 
+  logger.info("Product created", {
+    productId: created._id,
+    name: created.name,
+    category: created.category,
+  });
+
   res.status(201).json({
+    success: true,
     message: "Product created",
     data: created,
   });
@@ -169,7 +213,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   if (data.name) data.slug = generateSlug(data.name);
 
   if (data.category) {
-    await validateExistance(
+    await validateExistence(
       Category,
       { _id: data.category },
       "Category not found",
@@ -179,7 +223,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   if (subcategory === null || subcategory === "") {
     product.subcategory = undefined;
   } else if (subcategory) {
-    await validateExistance(
+    await validateExistence(
       Subcategory,
       { _id: subcategory, category: data.category || product.category },
       "Subcategory not found or does not belong to category",
@@ -192,9 +236,17 @@ const updateProduct = asyncHandler(async (req, res) => {
   Object.assign(product, data);
   await product.save();
 
-  if (data.image && oldImage) deleteImageFromDisk(oldImage);
+  if (data.image && oldImage) {
+    deleteImageFromDisk(oldImage);
+  }
+
+  logger.info("Product updated", {
+    productId: product._id,
+    updatedFields: Object.keys(data),
+  });
 
   res.status(200).json({
+    success: true,
     message: "Product updated",
     data: product,
   });
@@ -205,20 +257,22 @@ const softDeleteProduct = asyncHandler(async (req, res) => {
     _id: req.params.id,
     isDeleted: false,
   });
+
   if (!product) throw new AppError("Product not found", 404);
+
   product.isDeleted = true;
   await product.save();
-  res.status(200).json({ message: "Product deleted" });
-});
 
-const deleteImageFromDisk = (filename) => {
-  if (!filename) return;
-  const filepath = path.join(process.cwd(), "uploads", "products", filename);
-  fs.unlink(filepath, (err) => {
-    if (err && err.code !== "ENOENT")
-      console.error("Failed to delete image:", err.message);
+  logger.info("Product soft deleted", {
+    productId: product._id,
+    name: product.name,
   });
-};
+
+  res.status(200).json({
+    success: true,
+    message: "Product deleted",
+  });
+});
 
 module.exports = {
   getProducts,

@@ -16,13 +16,6 @@ const errorHandler = (err, req, res, _next) => {
     });
   }
 
-  if (err.name === "ValidationError") {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid request data.",
-    });
-  }
-
   if (err.name === "JsonWebTokenError") {
     return res.status(401).json({
       success: false,
