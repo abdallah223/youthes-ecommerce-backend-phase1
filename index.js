@@ -6,8 +6,8 @@ const rateLimit = require("express-rate-limit");
 const path = require("path");
 const errorHandler = require("./src/middleware/error.middleware");
 const productRoutes = require("./src/routes/product.route");
-const Category = require("./src/models/category.model");
-
+const authRoutes = require("./src/routes/auth.route");
+const MINUTE = 60 * 1000;
 const app = express();
 
 async function startServer() {
@@ -28,7 +28,7 @@ async function startServer() {
     app.use(
       "/api",
       rateLimit({
-        windowMs: 15 * 60 * 1000,
+        windowMs: 15 * MINUTE,
         max: 100,
         message: {
           success: false,
@@ -39,6 +39,7 @@ async function startServer() {
     app.use(express.json({ limit: "10kb" }));
     app.use("/uploads", express.static(path.join(__dirname, "uploads")));
     app.use("/api/v1/products", productRoutes);
+    app.use("/api/v1/auth", authRoutes);
     app.use(errorHandler);
     app.listen(env.port, () => {
       console.log(`Server is running on ${env.port}`);
