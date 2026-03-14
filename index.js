@@ -7,6 +7,7 @@ const path = require("path");
 const errorHandler = require("./src/middleware/error.middleware");
 const productRoutes = require("./src/routes/product.route");
 const categoriesRoutes = require("./src/routes/category.route");
+const usersRoutes = require("./src/routes/user.route");
 const authRoutes = require("./src/routes/auth.route");
 const MINUTE = 60 * 1000;
 const app = express();
@@ -23,7 +24,7 @@ async function startServer() {
           return callback(new Error("CORS Policy: Origin not Allowed"));
         },
         credentials: true,
-        methods: ["GET", "POST", "DELETE", "PUT"],
+        methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
       }),
     );
     app.use(
@@ -42,6 +43,7 @@ async function startServer() {
     app.use("/api/v1/auth", authRoutes);
     app.use("/api/v1/products", productRoutes);
     app.use("/api/v1/categories", categoriesRoutes);
+    app.use("/api/v1/users", usersRoutes);
     app.use(errorHandler);
     app.listen(env.port, () => {
       console.log(`Server is running on ${env.port}`);
