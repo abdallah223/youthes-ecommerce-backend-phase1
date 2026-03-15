@@ -1,7 +1,7 @@
 //To simplify the review process, Dr. Ahmed, I've kept the logic inside the controller instead of moving it to a separate service file
 const mongoose = require("mongoose");
 const asyncHandler = require("../utils/async-handler");
-const { Cart } = require("./cart.model");
+const Cart = require("../models/cart.model");
 const Product = require("../models/product.model");
 const AppError = require("../utils/app-error");
 const logger = require("../utils/logger");

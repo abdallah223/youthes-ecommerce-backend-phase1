@@ -9,16 +9,16 @@ const {
   clearCart,
   mergeCart,
   confirmPriceChange,
-} = require("./cart.controller");
+} = require("../controllers/cart.controller");
 
 router.use(protect);
 
 router.get("/", getCart);
-router.post("/items", validate(addItemSchema), addItem);
-router.put("/items/:productId", validate(updateItemSchema), updateItem);
+router.post("/items", addItem);
+router.put("/items/:productId", updateItem);
 router.delete("/items/:productId", removeItem);
 router.delete("/", clearCart);
-router.post("/merge", validate(mergeCartSchema), mergeCart);
+router.post("/merge", mergeCart);
 router.patch("/confirm-price/:productId", confirmPriceChange);
 
 module.exports = router;
