@@ -12,6 +12,7 @@ const authRoutes = require("./src/routes/auth.route");
 const cartRoutes = require("./src/routes/cart.route");
 const orderRoutes = require("./src/routes/order.route");
 const testimonialRoutes = require("./src/routes/testimonial.route");
+const staticPagesRoutes = require("./src/routes/static-content.route");
 const MINUTE = 60 * 1000;
 const app = express();
 
@@ -50,6 +51,7 @@ async function startServer() {
     app.use("/api/v1/cart", cartRoutes);
     app.use("/api/v1/orders", orderRoutes);
     app.use("/api/v1/testimonial", testimonialRoutes);
+    app.use("/api/v1/pages", staticPagesRoutes);
 
     app.use(errorHandler);
     app.listen(env.port, () => {
