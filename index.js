@@ -10,6 +10,7 @@ const categoriesRoutes = require("./src/routes/category.route");
 const usersRoutes = require("./src/routes/user.route");
 const authRoutes = require("./src/routes/auth.route");
 const cartRoutes = require("./src/routes/cart.route");
+const orderRoutes = require("./src/routes/order.route");
 const MINUTE = 60 * 1000;
 const app = express();
 
@@ -46,6 +47,7 @@ async function startServer() {
     app.use("/api/v1/categories", categoriesRoutes);
     app.use("/api/v1/users", usersRoutes);
     app.use("/api/v1/cart", cartRoutes);
+    app.use("/api/v1/orders", orderRoutes);
 
     app.use(errorHandler);
     app.listen(env.port, () => {
