@@ -1,5 +1,5 @@
 const asyncHandler = require("../utils/async-handler");
-const Testimonial = require("./testimonial.model");
+const Testimonial = require("../models/testimonial.model");
 const AppError = require("../utils/app-error");
 const logger = require("../utils/logger");
 
@@ -18,6 +18,7 @@ const getApprovedTestimonials = asyncHandler(async (_req, res) => {
 
 const createTestimonial = asyncHandler(async (req, res) => {
   const userId = req.user._id.toString();
+  const { reviewText, rating } = req.body;
 
   const existing = await Testimonial.findOne({ user: userId });
   if (existing)
@@ -26,8 +27,8 @@ const createTestimonial = asyncHandler(async (req, res) => {
   const testimonial = await Testimonial.create({
     user: userId,
     userName: req.user.fullName,
-    reviewText: req.body.reviewText,
-    rating: req.body.rating,
+    reviewText,
+    rating,
     status: "pending",
   });
 
@@ -44,11 +45,12 @@ const createTestimonial = asyncHandler(async (req, res) => {
 });
 
 const getTestimonialsAdmin = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20;
+  const { status, page: rawPage, limit: rawLimit } = req.query;
+  const page = parseInt(rawPage) || 1;
+  const limit = parseInt(rawLimit) || 20;
   const skip = (page - 1) * limit;
 
-  const filter = req.query.status ? { status: req.query.status } : {};
+  const filter = status ? { status } : {};
 
   const [testimonials, total] = await Promise.all([
     Testimonial.find(filter)
@@ -69,10 +71,11 @@ const getTestimonialsAdmin = asyncHandler(async (req, res) => {
 });
 
 const updateTestimonialStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
   const { status } = req.body;
 
   const testimonial = await Testimonial.findByIdAndUpdate(
-    req.params.id,
+    id,
     { status },
     { new: true },
   );
