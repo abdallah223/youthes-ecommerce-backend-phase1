@@ -50,7 +50,7 @@ async function startServer() {
     app.use("/api/v1/users", usersRoutes);
     app.use("/api/v1/cart", cartRoutes);
     app.use("/api/v1/orders", orderRoutes);
-    app.use("/api/v1/testimonial", testimonialRoutes);
+    app.use("/api/v1/testimonials", testimonialRoutes);
     app.use("/api/v1/pages", staticPagesRoutes);
 
     app.use(errorHandler);
