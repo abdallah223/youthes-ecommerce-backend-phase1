@@ -10,15 +10,13 @@ const env = require("../configs/env");
 
 const SHIPPING_FEE = env.shippingFee;
 
-// ─── Status Tables ────────────────────────────────────────────────────────────
-
 const TERMINAL_STATUSES = [
   "Delivered",
   "CancelledByUser",
   "CancelledByAdmin",
   "Rejected",
 ];
-const STOCK_DEDUCTED = ["Prepared", "Shipped", "Delivered"];
+const STOCK_DEDUCTED = ["Pending", "Prepared", "Shipped", "Delivered"];
 const RETURNS_STOCK = ["CancelledByAdmin", "Rejected"];
 
 const VALID_TRANSITIONS = {
@@ -31,7 +29,7 @@ const VALID_TRANSITIONS = {
   Rejected: [],
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+//Helpers
 
 const validateObjectId = (id, label = "ID") => {
   if (!mongoose.Types.ObjectId.isValid(id))
@@ -85,7 +83,7 @@ const returnStock = async (order) => {
   );
 };
 
-// ─── Controllers ─────────────────────────────────────────────────────────────
+//Controllers
 
 const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user._id.toString();
@@ -158,6 +156,8 @@ const createOrder = asyncHandler(async (req, res) => {
     status: "Pending",
   });
 
+  await deductStock(order);
+
   await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
 
   logger.info("Order created", {
@@ -228,6 +228,9 @@ const cancelMyOrder = asyncHandler(async (req, res) => {
   order.status = "CancelledByUser";
   order.cancelledBy = "user";
   if (reason) order.cancellationReason = reason;
+
+  await returnStock(order);
+
   await order.save();
 
   logger.info("Order cancelled by user", { orderId: order._id, userId });
@@ -312,9 +315,6 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
   const prevStatus = order.status;
 
-  if (prevStatus === "Pending" && status === "Prepared")
-    await deductStock(order);
-
   if (STOCK_DEDUCTED.includes(prevStatus) && RETURNS_STOCK.includes(status))
     await returnStock(order);
 
@@ -346,7 +346,10 @@ const getSalesReport = asyncHandler(async (req, res) => {
   const dateFrom = req.query.dateFrom
     ? new Date(req.query.dateFrom)
     : new Date(new Date().setDate(1));
-  const dateTo = req.query.dateTo ? new Date(req.query.dateTo) : new Date();
+
+  const dateTo = req.query.dateTo
+    ? new Date(new Date(req.query.dateTo).setHours(23, 59, 59, 999))
+    : new Date();
 
   if (isNaN(dateFrom) || isNaN(dateTo))
     throw new AppError("Invalid date format. Use YYYY-MM-DD", 400);
