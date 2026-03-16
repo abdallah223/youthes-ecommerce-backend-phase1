@@ -4,6 +4,7 @@ const {
   getPage,
   updateAboutUs,
   updateFaq,
+  updateContactUs,
 } = require("../controllers/static-content.controller");
 
 const router = Router();
@@ -14,5 +15,6 @@ router.use(protect, authorize("admin"));
 
 router.put("/admin/about_us", updateAboutUs);
 router.put("/admin/faq", updateFaq);
+router.put("/admin/contact_us", updateContactUs);
 
 module.exports = router;
