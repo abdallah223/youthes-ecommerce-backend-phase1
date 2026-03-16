@@ -120,7 +120,7 @@ const toggleUserActive = asyncHandler(async (req, res) => {
   const user = await User.findOneAndUpdate(
     { _id: req.params.id, role: "user" },
     [{ $set: { isActive: { $not: "$isActive" } } }],
-    { new: true },
+    { new: true, updatePipeline: true },
   )
     .select("-password")
     .lean();
