@@ -1,7 +1,3 @@
-// Dear Dr. Ahmed,
-// I used stricter validation in this controller as a learning exercise.
-// In the other controllers, I kept things simpler and did not move the logic
-// into a service layer, so the project would be easier to review.
 const asyncHandler = require("../utils/async-handler");
 const Product = require("../models/product.model");
 const { Category, Subcategory } = require("../models/category.model");
@@ -18,6 +14,26 @@ const SORT_MAP = {
   name_desc: { name: -1 },
   price_asc: { price: 1 },
   price_desc: { price: -1 },
+};
+
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const buildSearchFilter = (search) => {
+  const words = search.trim().split(/\s+/).filter(Boolean);
+
+  if (words.length === 1) {
+    const regex = { $regex: escapeRegex(words[0]), $options: "i" };
+    return {
+      $or: [{ name: regex }, { description: regex }],
+    };
+  }
+  return {
+    $and: words.map((word) => ({
+      $or: [
+        { name: { $regex: escapeRegex(word), $options: "i" } },
+        { description: { $regex: escapeRegex(word), $options: "i" } },
+      ],
+    })),
+  };
 };
 
 const validateExistence = async (
@@ -70,7 +86,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const filter = { isDeleted: false };
   if (category) filter.category = category;
   if (subcategory) filter.subcategory = subcategory;
-  if (search?.trim()) filter.$text = { $search: search.trim() };
+  if (search?.trim()) Object.assign(filter, buildSearchFilter(search));
 
   const sortOrder = SORT_MAP[sort] || SORT_MAP.newest;
 
@@ -124,7 +140,7 @@ const getProductsAdmin = asyncHandler(async (req, res) => {
 
   const filter = {};
   if (category) filter.category = category;
-  if (search?.trim()) filter.$text = { $search: search.trim() };
+  if (search?.trim()) Object.assign(filter, buildSearchFilter(search));
 
   const [products, total] = await Promise.all([
     Product.find(filter)
