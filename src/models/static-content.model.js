@@ -4,7 +4,7 @@ const StaticContentSchema = new mongoose.Schema(
   {
     pageKey: {
       type: String,
-      enum: ["about_us", "faq"],
+      enum: ["about_us", "faq", "contact_us"],
       required: true,
       unique: true,
     },
