@@ -3,7 +3,6 @@ const connectDB = require("./src/configs/db");
 const env = require("./src/configs/env");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
-const path = require("path");
 const errorHandler = require("./src/middleware/error.middleware");
 const productRoutes = require("./src/routes/product.route");
 const categoriesRoutes = require("./src/routes/category.route");
@@ -43,7 +42,6 @@ async function startServer() {
       }),
     );
     app.use(express.json({ limit: "10kb" }));
-    app.use("/uploads", express.static(path.join(__dirname, "uploads")));
     app.use("/api/v1/auth", authRoutes);
     app.use("/api/v1/products", productRoutes);
     app.use("/api/v1/categories", categoriesRoutes);

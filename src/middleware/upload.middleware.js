@@ -1,16 +1,7 @@
 const multer = require("multer");
-const path = require("path");
 const AppError = require("../utils/app-error.js");
-const { randomUUID } = require("node:crypto");
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, "uploads/products"),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${randomUUID()}${ext}`);
-  },
-});
-
+const storage = multer.memoryStorage();
 const fileFilter = (_req, file, cb) => {
   const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
   if (allowed.includes(file.mimetype)) {

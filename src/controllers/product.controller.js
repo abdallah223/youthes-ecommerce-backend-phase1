@@ -4,8 +4,7 @@ const { Category, Subcategory } = require("../models/category.model");
 const generateSlug = require("../utils/helpers.util");
 const AppError = require("../utils/app-error");
 const logger = require("../utils/logger");
-const fs = require("fs");
-const path = require("path");
+const imagekit = require("../configs/imagekit");
 
 const SORT_MAP = {
   newest: { createdAt: -1 },
@@ -43,30 +42,6 @@ const validateExistence = async (
 ) => {
   const exists = await model.exists(filter);
   if (!exists) throw new AppError(message, 404);
-};
-
-const deleteImageFromDisk = (filename) => {
-  if (!filename) return;
-
-  const filepath = path.join(process.cwd(), "uploads", "products", filename);
-
-  fs.unlink(filepath, (err) => {
-    if (!err) {
-      logger.info("Image deleted from disk", { filename, filepath });
-      return;
-    }
-
-    if (err.code === "ENOENT") {
-      logger.warn("Image file not found during delete", { filename, filepath });
-      return;
-    }
-
-    logger.error("Failed to delete image from disk", {
-      filename,
-      filepath,
-      error: err.message,
-    });
-  });
 };
 
 const getProducts = asyncHandler(async (req, res) => {
@@ -180,7 +155,11 @@ const createProduct = asyncHandler(async (req, res) => {
       "Subcategory not found or does not belong to category",
     );
   }
-
+  const uploadResult = await imagekit.upload({
+    file: req.file.buffer,
+    fileName: req.file.originalname,
+    folder: "products",
+  });
   const created = await Product.create({
     name,
     slug: generateSlug(name),
@@ -189,7 +168,7 @@ const createProduct = asyncHandler(async (req, res) => {
     category,
     subcategory: subcategory || undefined,
     stockCount: stockCount ?? 0,
-    image: req.file.filename,
+    image: uploadResult.url,
   });
 
   logger.info("Product created", {
@@ -217,7 +196,17 @@ const updateProduct = asyncHandler(async (req, res) => {
     ...(stockCount != null && { stockCount }),
   };
 
-  if (req.file) data.image = req.file.filename;
+  const imagekit = require("../configs/imagekit");
+
+  if (req.file) {
+    const uploadResult = await imagekit.upload({
+      file: req.file.buffer,
+      fileName: req.file.originalname,
+      folder: "products",
+    });
+
+    data.image = uploadResult.url;
+  }
 
   const product = await Product.findOne({
     _id: req.params.id,
@@ -247,14 +236,8 @@ const updateProduct = asyncHandler(async (req, res) => {
     data.subcategory = subcategory;
   }
 
-  const oldImage = product.image;
-
   Object.assign(product, data);
   await product.save();
-
-  if (data.image && oldImage) {
-    deleteImageFromDisk(oldImage);
-  }
 
   logger.info("Product updated", {
     productId: product._id,

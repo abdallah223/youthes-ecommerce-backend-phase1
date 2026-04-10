@@ -1,4 +1,3 @@
-//To simplify the review process, Dr. Ahmed, I've kept the logic inside the controller instead of moving it to a separate service file
 const mongoose = require("mongoose");
 const asyncHandler = require("../utils/async-handler");
 const Cart = require("../models/cart.model");
@@ -8,8 +7,6 @@ const logger = require("../utils/logger");
 const env = require("../configs/env");
 
 const SHIPPING_FEE = env.shippingFee;
-
-//Helpers
 
 const EMPTY_CART = (shippingFee) => ({
   items: [],
@@ -108,7 +105,6 @@ const getEnrichedCart = async (userId, shippingFee) => {
   return buildCartSummary(enriched, shippingFee);
 };
 
-// Controllers
 const getCart = asyncHandler(async (req, res) => {
   const data = await getEnrichedCart(req.user._id.toString(), SHIPPING_FEE);
 

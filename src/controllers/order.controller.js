@@ -29,8 +29,6 @@ const VALID_TRANSITIONS = {
   Rejected: [],
 };
 
-//Helpers
-
 const validateObjectId = (id, label = "ID") => {
   if (!mongoose.Types.ObjectId.isValid(id))
     throw new AppError(`Invalid ${label}`, 400);
@@ -82,8 +80,6 @@ const returnStock = async (order) => {
     ),
   );
 };
-
-//Controllers
 
 const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user._id.toString();
