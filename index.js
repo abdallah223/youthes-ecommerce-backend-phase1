@@ -20,14 +20,11 @@ async function startServer() {
     await connectDB();
     app.use(
       cors({
-        origin: function (origin, callback) {
-          if (!origin || env.allowedOrigins.includes(origin)) {
-            return callback(null, true);
-          }
-          return callback(new Error("CORS Policy: Origin not Allowed"));
-        },
+        origin:
+          process.env.NODE_ENV === "production"
+            ? process.env.CLIENT_URL
+            : "http://localhost:4200",
         credentials: true,
-        methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
       }),
     );
     app.use(
