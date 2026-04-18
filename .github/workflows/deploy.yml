@@ -14,11 +14,11 @@ jobs:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          host_key_check: false
+          # The correct SHA256 fingerprint for your server
+          fingerprint: "SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU"
           script: |
             cd ~/youthes-ecommerce-backend-phase1
             git pull origin main
             npm install --production
-            npm prune --production
             pm2 restart youthes-api || pm2 start index.js --name "youthes-api"
             pm2 save
