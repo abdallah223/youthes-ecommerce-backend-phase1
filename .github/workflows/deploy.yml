@@ -16,6 +16,15 @@ jobs:
       - name: Deploy to Oracle
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+            # 1. Load NVM and Node environment
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            
+            # 2. Verify commands are found (Professional Audit)
+            command -v npm
+            command -v pm2
+
+            # 3. Execute deployment
             cd ~/youthes-ecommerce-backend-phase1
             git pull origin main
             npm install --production
