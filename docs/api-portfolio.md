@@ -5,7 +5,9 @@ Portfolio-ready API documentation for the backend of the Youthes fashion e-comme
 ## Overview
 
 - Architecture: REST API
-- Base URL: `http://localhost:3000/api/v1`
+- Production Base URL: `https://youthes-api.duckdns.org/api/v1`
+- Live Interactive Docs: `https://youthes-api.duckdns.org/docs/`
+- Local Base URL: `http://localhost:3000/api/v1`
 - Stack: Node.js, Express, MongoDB, Mongoose
 - Authentication: JWT bearer token
 - Roles: `user`, `admin`
@@ -20,6 +22,14 @@ This API supports the full customer and admin flow for an e-commerce store:
 - checkout and order lifecycle management
 - testimonials moderation
 - editable static content pages
+
+## Live Access
+
+Visitors can explore the deployed backend using these public links:
+
+- Interactive docs: `https://youthes-api.duckdns.org/docs/`
+- OpenAPI spec: `https://youthes-api.duckdns.org/docs/openapi.yaml`
+- API base URL: `https://youthes-api.duckdns.org/api/v1`
 
 ## Authentication
 

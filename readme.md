@@ -108,7 +108,16 @@ npm run dev
 npm start
 ```
 
-Server runs at `http://localhost:3000`
+Local server runs at `http://localhost:3000`
+
+---
+
+## Live Deployment
+
+- Interactive docs: `https://youthes-api.duckdns.org/docs/`
+- OpenAPI spec: `https://youthes-api.duckdns.org/docs/openapi.yaml`
+- Production API base URL: `https://youthes-api.duckdns.org/api/v1`
+- Frontend client: `https://youthes-ecommerce-client-phase1.vercel.app`
 
 ---
 
@@ -435,3 +444,4 @@ MIT
 
 - Human-friendly API guide: [docs/api-portfolio.md](./docs/api-portfolio.md)
 - OpenAPI spec: [docs/openapi.yaml](./docs/openapi.yaml)
+- Live interactive docs: `https://youthes-api.duckdns.org/docs/`

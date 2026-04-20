@@ -323,6 +323,18 @@
         overflow: auto;
       }
 
+      .link-chip {
+        display: block;
+        margin-top: 12px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid var(--line);
+        color: var(--text);
+        text-decoration: none;
+        word-break: break-word;
+      }
+
       .swagger-wrap {
         margin-top: 20px;
         border-radius: 28px;
@@ -539,6 +551,13 @@
                 A versioned REST API built for both customer-facing shopping
                 flows and admin operations.
               </div>
+              <a
+                class="link-chip"
+                href="https://youthes-api.duckdns.org/api/v1"
+                target="_blank"
+                rel="noreferrer"
+                >https://youthes-api.duckdns.org/api/v1</a
+              >
             </div>
             <div class="metric-card">
               <div class="metric-label">Coverage</div>
@@ -578,6 +597,13 @@
             request and response models, and try endpoints against the running
             server.
           </p>
+          <a
+            class="link-chip"
+            href="https://youthes-api.duckdns.org/docs/openapi.yaml"
+            target="_blank"
+            rel="noreferrer"
+            >Open the live OpenAPI spec</a
+          >
         </div>
       </section>
 

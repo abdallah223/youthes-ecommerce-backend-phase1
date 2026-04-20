@@ -7,6 +7,8 @@ info:
     The API covers customer shopping flows and admin operations for catalog,
     orders, testimonials, and editable static content.
 servers:
+  - url: https://youthes-api.duckdns.org/api/v1
+    description: Production
   - url: http://localhost:3000/api/v1
     description: Local development
 tags:
