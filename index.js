@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const connectDB = require("./src/configs/db");
 const env = require("./src/configs/env");
 const cors = require("cors");
@@ -39,6 +40,7 @@ async function startServer() {
       }),
     );
     app.use(express.json({ limit: "10kb" }));
+    app.use("/docs", express.static(path.join(__dirname, "docs")));
     app.use("/api/v1/auth", authRoutes);
     app.use("/api/v1/products", productRoutes);
     app.use("/api/v1/categories", categoriesRoutes);

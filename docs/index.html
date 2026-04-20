@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Youthes API Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css"
+    />
+    <style>
+      :root {
+        --bg: #f3efe8;
+        --bg-deep: #e7dfd4;
+        --panel: rgba(255, 252, 247, 0.84);
+        --panel-solid: #fffaf3;
+        --text: #1a1d18;
+        --muted: #676b61;
+        --line: rgba(42, 47, 38, 0.12);
+        --primary: #b85c38;
+        --primary-deep: #8f4225;
+        --secondary: #2f5d50;
+        --shadow: 0 20px 60px rgba(44, 31, 18, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        font-family: "IBM Plex Sans", sans-serif;
+        background:
+          radial-gradient(
+            circle at 12% 10%,
+            rgba(184, 92, 56, 0.16),
+            transparent 22%
+          ),
+          radial-gradient(
+            circle at 88% 12%,
+            rgba(47, 93, 80, 0.14),
+            transparent 24%
+          ),
+          linear-gradient(
+            180deg,
+            #fbf6ef 0%,
+            var(--bg) 45%,
+            var(--bg-deep) 100%
+          );
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(26, 29, 24, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(26, 29, 24, 0.03) 1px, transparent 1px);
+        background-size: 28px 28px;
+        mask-image: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.45),
+          transparent 88%
+        );
+      }
+
+      .shell {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 24px 20px 40px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        color: #fff;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        box-shadow: 0 14px 30px rgba(103, 63, 44, 0.22);
+      }
+
+      .top-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        text-decoration: none;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(10px);
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease,
+          border-color 0.18s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(39, 28, 19, 0.08);
+        border-color: rgba(184, 92, 56, 0.25);
+      }
+
+      .button.primary {
+        color: #fff;
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--primary), #d67c4b);
+        box-shadow: 0 16px 30px rgba(184, 92, 56, 0.22);
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        border-radius: 28px;
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(255, 255, 255, 0.58),
+            transparent 30%
+          ),
+          linear-gradient(
+            135deg,
+            rgba(255, 250, 243, 0.92),
+            rgba(251, 244, 233, 0.72)
+          );
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 280px;
+        height: 280px;
+        border-radius: 999px;
+        background: radial-gradient(
+          circle,
+          rgba(47, 93, 80, 0.15),
+          transparent 68%
+        );
+      }
+
+      .hero-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.9fr);
+        gap: 24px;
+        padding: 34px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(184, 92, 56, 0.2);
+        background: rgba(184, 92, 56, 0.08);
+        color: var(--primary-deep);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .hero h1 {
+        margin: 0;
+        max-width: 720px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: clamp(2.5rem, 5vw, 4.7rem);
+        line-height: 0.94;
+        letter-spacing: -0.05em;
+      }
+
+      .lead {
+        margin: 18px 0 0;
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.72;
+      }
+
+      .hero-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .metrics {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+      }
+
+      .metric-card,
+      .callout,
+      .swagger-wrap {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 30px rgba(41, 31, 21, 0.05);
+      }
+
+      .metric-card {
+        border-radius: 22px;
+        padding: 18px;
+      }
+
+      .metric-label {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .metric-value {
+        margin-top: 8px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .metric-note {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.55;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .pill {
+        padding: 9px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.6);
+        color: var(--text);
+        font-size: 0.92rem;
+      }
+
+      .subgrid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 18px;
+        margin-top: 20px;
+      }
+
+      .callout {
+        border-radius: 24px;
+        padding: 22px 24px;
+      }
+
+      .callout h2,
+      .swagger-head h2 {
+        margin: 0 0 10px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 1.4rem;
+        letter-spacing: -0.03em;
+      }
+
+      .callout p,
+      .swagger-head p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .code-chip {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: #201c19;
+        color: #f6eee4;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.94rem;
+        overflow: auto;
+      }
+
+      .swagger-wrap {
+        margin-top: 20px;
+        border-radius: 28px;
+        overflow: hidden;
+      }
+
+      .swagger-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 24px 24px 10px;
+      }
+
+      .swagger-head .mini {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      #swagger-ui {
+        padding: 0 18px 18px;
+      }
+
+      .swagger-ui {
+        font-family: "IBM Plex Sans", sans-serif;
+        color: var(--text);
+      }
+
+      .swagger-ui .topbar {
+        display: none;
+      }
+
+      .swagger-ui .info {
+        margin: 0 0 18px;
+      }
+
+      .swagger-ui .scheme-container {
+        margin: 0 0 18px;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.78);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        box-shadow: none;
+      }
+
+      .swagger-ui .opblock-tag {
+        padding: 18px 8px 14px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 1.1rem;
+        border-bottom-color: var(--line);
+      }
+
+      .swagger-ui .opblock {
+        margin: 0 0 14px;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 12px 22px rgba(34, 25, 17, 0.06);
+      }
+
+      .swagger-ui .btn.authorize {
+        border-color: rgba(47, 93, 80, 0.26);
+        color: var(--secondary);
+      }
+
+      .swagger-ui .btn.execute {
+        background: var(--primary);
+        border-color: var(--primary);
+      }
+
+      .swagger-ui .btn.cancel {
+        border-color: #b42318;
+        color: #b42318;
+      }
+
+      .swagger-ui .opblock.opblock-get {
+        border-color: rgba(47, 93, 80, 0.28);
+        background: rgba(47, 93, 80, 0.06);
+      }
+
+      .swagger-ui .opblock.opblock-post {
+        border-color: rgba(184, 92, 56, 0.28);
+        background: rgba(184, 92, 56, 0.06);
+      }
+
+      .swagger-ui .opblock.opblock-put,
+      .swagger-ui .opblock.opblock-patch {
+        border-color: rgba(180, 133, 37, 0.28);
+        background: rgba(180, 133, 37, 0.06);
+      }
+
+      .swagger-ui .opblock.opblock-delete {
+        border-color: rgba(168, 32, 32, 0.24);
+        background: rgba(168, 32, 32, 0.06);
+      }
+
+      .swagger-ui .responses-inner,
+      .swagger-ui .opblock-section-header,
+      .swagger-ui .tab li button.tablinks,
+      .swagger-ui .model-box,
+      .swagger-ui section.models,
+      .swagger-ui .response-col_status,
+      .swagger-ui table thead tr td,
+      .swagger-ui table thead tr th {
+        background: rgba(255, 255, 255, 0.78);
+      }
+
+      .swagger-ui section.models {
+        border-radius: 20px;
+        border: 1px solid var(--line);
+      }
+
+      @media (max-width: 980px) {
+        .hero-grid,
+        .subgrid {
+          grid-template-columns: 1fr;
+        }
+
+        .swagger-head {
+          align-items: start;
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .shell {
+          padding: 14px 12px 24px;
+        }
+
+        .topbar {
+          align-items: start;
+          flex-direction: column;
+        }
+
+        .hero-grid {
+          padding: 22px;
+        }
+
+        .hero-links,
+        .top-actions {
+          width: 100%;
+        }
+
+        .button {
+          justify-content: center;
+          width: 100%;
+        }
+
+        #swagger-ui {
+          padding: 0 10px 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">Y</div>
+          <div>Youthes API Docs</div>
+        </div>
+        <div class="top-actions">
+          <a
+            class="button"
+            href="./api-portfolio.md"
+            target="_blank"
+            rel="noreferrer"
+            >API Guide</a
+          >
+          <a
+            class="button primary"
+            href="./openapi.yaml"
+            target="_blank"
+            rel="noreferrer"
+            >Open Spec</a
+          >
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">Interactive Documentation</div>
+            <h1>Explore the Youthes E-Commerce API</h1>
+            <p class="lead">
+              This documentation helps to understand how the Youthes backend is
+              structured, what business flows it supports, and how each endpoint
+              works across storefront and admin experiences.
+            </p>
+
+            <div class="pill-row">
+              <span class="pill">JWT Auth</span>
+              <span class="pill">Role-Based Access</span>
+              <span class="pill">Cart + Orders</span>
+              <span class="pill">Admin Dashboard APIs</span>
+            </div>
+
+            <div class="hero-links">
+              <a class="button primary" href="#swagger-ui">Browse Endpoints</a>
+              <a
+                class="button"
+                href="./api-portfolio.md"
+                target="_blank"
+                rel="noreferrer"
+                >Read Narrative Guide</a
+              >
+            </div>
+          </div>
+
+          <aside class="metrics">
+            <div class="metric-card">
+              <div class="metric-label">Base URL</div>
+              <div class="metric-value">/api/v1</div>
+              <div class="metric-note">
+                A versioned REST API built for both customer-facing shopping
+                flows and admin operations.
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Coverage</div>
+              <div class="metric-value">8 Modules</div>
+              <div class="metric-note">
+                Covering authentication, catalog browsing, cart operations,
+                checkout, orders, users, content pages, and testimonials.
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Auth Header</div>
+              <div class="metric-note">
+                Visitors can use this format to test protected routes inside the
+                interactive reference.
+              </div>
+              <div class="code-chip">
+                Authorization: Bearer &lt;jwt-token&gt;
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="subgrid">
+        <div class="callout">
+          <h2>What this API demonstrates</h2>
+          <p>
+            This backend goes beyond basic CRUD by handling role-based access,
+            cart merge behavior, stock-aware ordering, controlled order status
+            transitions, customer management, and editable platform content.
+          </p>
+        </div>
+        <div class="callout">
+          <h2>How to explore</h2>
+          <p>
+            Use the authorize button inside the interactive reference, inspect
+            request and response models, and try endpoints against the running
+            server.
+          </p>
+        </div>
+      </section>
+
+      <section class="swagger-wrap">
+        <div class="swagger-head">
+          <div>
+            <h2>Endpoint Reference</h2>
+            <p>
+              An interactive reference powered by Swagger UI and backed by the
+              project OpenAPI specification.
+            </p>
+          </div>
+          <div class="mini">Docs route: <code>/docs</code></div>
+        </div>
+        <div id="swagger-ui"></div>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+    <script>
+      window.ui = SwaggerUIBundle({
+        url: "./openapi.yaml",
+        dom_id: "#swagger-ui",
+        deepLinking: true,
+        displayRequestDuration: true,
+        persistAuthorization: true,
+        docExpansion: "list",
+        filter: true,
+        tryItOutEnabled: true,
+        defaultModelsExpandDepth: 1,
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        layout: "BaseLayout",
+      });
+    </script>
+  </body>
+</html>

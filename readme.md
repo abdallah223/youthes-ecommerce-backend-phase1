@@ -431,3 +431,7 @@ Logs are written to console and to log files via Winston. All significant action
 ## License
 
 MIT
+## Portfolio Docs
+
+- Human-friendly API guide: [docs/api-portfolio.md](./docs/api-portfolio.md)
+- OpenAPI spec: [docs/openapi.yaml](./docs/openapi.yaml)
