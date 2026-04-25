@@ -213,7 +213,9 @@ const updateProduct = asyncHandler(async (req, res) => {
 
   if (!product) throw new AppError("Product not found", 404);
 
-  if (data.name) data.slug = generateSlug(data.name);
+  if (data.name && data.name !== product.name) {
+    data.slug = generateSlug(data.name);
+  }
 
   if (data.category) {
     await validateExistence(
