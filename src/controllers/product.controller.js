@@ -7,12 +7,12 @@ const logger = require("../utils/logger");
 const imagekit = require("../configs/imagekit");
 
 const SORT_MAP = {
-  newest: { createdAt: -1 },
-  oldest: { createdAt: 1 },
-  name_asc: { name: 1 },
-  name_desc: { name: -1 },
-  price_asc: { price: 1 },
-  price_desc: { price: -1 },
+  newest: { createdAt: -1, _id: -1 },
+  oldest: { createdAt: 1, _id: 1 },
+  price_asc: { price: 1, _id: 1 },
+  price_desc: { price: -1, _id: -1 },
+  name_asc: { name: 1, _id: 1 },
+  name_desc: { name: -1, _id: -1 },
 };
 
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -119,7 +119,7 @@ const getProductsAdmin = asyncHandler(async (req, res) => {
 
   const [products, total] = await Promise.all([
     Product.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limitNum)
       .populate("category", "name")
@@ -195,8 +195,6 @@ const updateProduct = asyncHandler(async (req, res) => {
     ...(category && { category }),
     ...(stockCount != null && { stockCount }),
   };
-
-  const imagekit = require("../configs/imagekit");
 
   if (req.file) {
     const uploadResult = await imagekit.upload({
