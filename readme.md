@@ -1,8 +1,28 @@
 # Youthes E-Commerce — Backend API (Phase1)
 
+![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)
+![Express](https://img.shields.io/badge/Express.js-Backend-black?logo=express)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-green?logo=mongodb)
+![JWT](https://img.shields.io/badge/Auth-JWT-blue)
+![Multer](https://img.shields.io/badge/File%20Upload-Multer-orange)
+![Deployed](https://img.shields.io/badge/Live-API-success)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
+
 REST API for the Youthes youth fashion e-commerce platform serving the Egyptian market. Built with Node.js, Express, and MongoDB.
 
+## 🔗 Live Links
+
+- 📚 **API Documentation (Swagger UI)**  
+  https://youthes-api.duckdns.org/docs/
+
+- 🌐 **Frontend Live Demo**  
+  https://youthes-ecommerce-client-phase1.vercel.app/
+
+- 🖥 **Frontend Repository**  
+  https://github.com/abdallah223/youthes-ecommerce-client-phase1
+
 ---
+
 
 ## Tech Stack
 
@@ -440,8 +460,3 @@ Logs are written to console and to log files via Winston. All significant action
 ## License
 
 MIT
-## Portfolio Docs
-
-- Human-friendly API guide: [docs/api-portfolio.md](./docs/api-portfolio.md)
-- OpenAPI spec: [docs/openapi.yaml](./docs/openapi.yaml)
-- Live interactive docs: `https://youthes-api.duckdns.org/docs/`
